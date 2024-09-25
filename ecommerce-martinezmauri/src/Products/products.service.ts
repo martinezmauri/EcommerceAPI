@@ -23,13 +23,13 @@ export class ProductsService {
   async addProducts(): Promise<string> {
     return await this.productRepository.addProducts();
   }
-  async createProduct(product: CreateProductDto): Promise<Product> {
+  async createProduct(product: CreateProductDto): Promise<string> {
     return await this.productRepository.createProduct(product);
   }
   async updateProductById(
     id: string,
     newProduct: Partial<Product>,
-  ): Promise<Partial<Product>> {
+  ): Promise<string> {
     return await this.productRepository.updateProductById(id, newProduct);
   }
   async deleteProductById(id: string): Promise<string> {

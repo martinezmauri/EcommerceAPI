@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Post } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { Categories } from './Categories.entity';
 import { ApiTags } from '@nestjs/swagger';
@@ -10,10 +10,20 @@ export class CategoriesController {
 
   @Get()
   async getCategories(): Promise<Categories[]> {
-    return this.categoriesService.getCategories();
+    try {
+      return this.categoriesService.getCategories();
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno.', error.message);
+    }
   }
   @Get('seeder')
   async addCategories(): Promise<string> {
-    return this.categoriesService.addCategories();
+    try {
+      return this.categoriesService.addCategories();
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno.', error.message);
+    }
   }
 }

@@ -60,8 +60,8 @@ export class CreateProductDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'La categoría del producto. ',
-    example: 'Ropa Deportiva',
+    description: 'ID de la categoría del producto. ',
+    example: '2c9cba4e-04a8-4e4a-a723-4e0cb3fa483f',
   })
-  categoryName: string;
+  category_id: string;
 }

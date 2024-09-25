@@ -40,10 +40,7 @@ export class UsersRepository {
     return createdUser;
   }
 
-  async updateUserById(
-    id: string,
-    user: Partial<User>,
-  ): Promise<Partial<User>> {
+  async updateUserById(id: string, user: Partial<User>): Promise<string> {
     const existingUser = await this.userRepository.findOne({ where: { id } });
 
     if (!existingUser) {
@@ -60,9 +57,8 @@ export class UsersRepository {
     const updatedUser = await this.userRepository.merge(existingUser, user);
 
     await this.userRepository.save(updatedUser);
-    const { password, ...userWithoutPassword } = updatedUser;
 
-    return userWithoutPassword;
+    return updatedUser.id;
   }
 
   async deleteUserById(id: string): Promise<string> {
@@ -70,6 +66,6 @@ export class UsersRepository {
     if (result.affected === 0) {
       throw new NotFoundException(`El usuario no existe.`);
     }
-    return `Usuario con ID ${id} eliminado correctamente.`;
+    return id;
   }
 }

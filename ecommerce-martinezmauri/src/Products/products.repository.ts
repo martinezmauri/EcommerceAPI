@@ -22,7 +22,7 @@ export class ProductsRepository {
 
   async getProducts(): Promise<Product[]> {
     return await this.productRepository.find({
-      relations: ['categories'], // orderDetails?
+      relations: ['categories'],
     });
   }
   async getProductById(id: string): Promise<Product> {
@@ -32,7 +32,6 @@ export class ProductsRepository {
     });
   }
   async addProducts(): Promise<string> {
-    // caso en que necesite cargar un producto.
     const categories = await this.categoriesRepository.find();
     if (categories.length === 0) {
       throw new BadRequestException('Primero debe cargar las categorías.');
@@ -65,15 +64,15 @@ export class ProductsRepository {
     return 'Productos agregados.';
   }
 
-  async createProduct(createProduct: CreateProductDto): Promise<Product> {
-    const { name, description, price, stock, imgUrl, categoryName } =
+  async createProduct(createProduct: CreateProductDto): Promise<string> {
+    const { name, description, price, stock, imgUrl, category_id } =
       createProduct;
 
     const category = await this.categoriesRepository.findOne({
-      where: { name: categoryName },
+      where: { id: category_id },
     });
     if (!category) {
-      throw new NotFoundException(`Categoría ${categoryName} no encontrada.`);
+      throw new NotFoundException(`Categoría ${category_id} no encontrada.`);
     }
     const newProduct = await this.productRepository.create({
       name,
@@ -83,13 +82,14 @@ export class ProductsRepository {
       imgUrl,
       categories: category,
     });
-    return await this.productRepository.save(newProduct);
+    const savedProduct = await this.productRepository.save(newProduct);
+    return savedProduct.id;
   }
 
   async updateProductById(
     id: string,
     newProduct: Partial<Product>,
-  ): Promise<Partial<Product>> {
+  ): Promise<string> {
     const product = await this.productRepository.findOneBy({ id });
     if (!product) {
       throw new NotFoundException(`El producto con ID ${id} no encontrado`);
@@ -98,15 +98,14 @@ export class ProductsRepository {
       ...product,
       ...newProduct,
     });
-    return updateProduct;
+    return updateProduct.id;
   }
 
   async deleteProductById(id: string): Promise<string> {
-    const product = await this.productRepository.findOneBy({ id });
-    if (!product) {
-      throw new NotFoundException(`El producto con ID ${id} no encontrado.`);
+    const product = await this.productRepository.delete({ id });
+    if (product.affected === 0) {
+      throw new NotFoundException(`El producto no existe.`);
     }
-    await this.productRepository.delete({ id });
-    return `Producto con ID ${id} eliminado`;
+    return id;
   }
 }

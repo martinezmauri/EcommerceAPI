@@ -146,7 +146,7 @@ describe('productRepository', () => {
       description: 'desc-test',
       price: 10,
       stock: 5,
-      categoryName: 'test',
+      category_id: '6816105a-a56b-4eb6-bdaf-d2cf75277550',
     };
     mockCategoriesRepository.findOne.mockResolvedValue(null);
     try {
@@ -166,7 +166,7 @@ describe('productRepository', () => {
       price: 10,
       stock: 5,
       imgUrl: 'http://imagen-de-prueba.com',
-      categoryName: 'categoria 1',
+      category_id: '6816105a-a56b-4eb6-bdaf-d2cf75277550',
     };
     const mockCategory = {
       id: 1,

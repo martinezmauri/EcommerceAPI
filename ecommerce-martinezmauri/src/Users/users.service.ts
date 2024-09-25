@@ -20,10 +20,7 @@ export class UsersService {
     return this.userRepository.getUserById(id);
   }
 
-  async updateUserById(
-    id: string,
-    user: Partial<User>,
-  ): Promise<Partial<User>> {
+  async updateUserById(id: string, user: Partial<User>): Promise<string> {
     return this.userRepository.updateUserById(id, user);
   }
 

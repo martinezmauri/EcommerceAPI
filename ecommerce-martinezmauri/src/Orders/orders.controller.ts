@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -22,15 +23,53 @@ export class OrdersController {
   @Get(':id')
   @UseGuards(AuthGuard)
   async getOrder(@Param('id', ParseUUIDPipe) id: string, @Request() req) {
-    const order = await this.ordersService.getOrder(id);
-    return { order, exp: req.user.exp };
+    try {
+      const { order, orderDetail } = await this.ordersService.getOrder(id);
+      const { isAdmin, password, ...userWithoutPassword } = order.user;
+      return {
+        user: userWithoutPassword,
+        order: {
+          id: order.id,
+          date: order.date,
+        },
+        orderDetails: {
+          id: orderDetail.id,
+          total: orderDetail.price,
+          products: orderDetail.products,
+        },
+        exp: req.user.exp,
+      };
+    } catch (error) {
+      console.error(error.message);
+      throw new BadRequestException('Error interno. ', error.message);
+    }
   }
 
   @ApiBearerAuth()
   @Post()
   @UseGuards(AuthGuard)
   async addOrder(@Body() createOrderDto: CreateOrderDto, @Request() req) {
-    const orderAdd = await this.ordersService.addOrder(createOrderDto);
-    return { orderAdd, exp: req.user.exp };
+    try {
+      const { savedOrder, orderDetail } =
+        await this.ordersService.addOrder(createOrderDto);
+      return {
+        id: savedOrder.id,
+        date: savedOrder.date,
+        userId: savedOrder.user.id,
+        orderDetail: {
+          id: orderDetail.id,
+          price: orderDetail.price,
+          products: orderDetail.products.map((p) => ({
+            id: p.id,
+            name: p.name,
+            price: p.price,
+          })),
+        },
+        exp: req.user.exp,
+      };
+    } catch (error) {
+      console.error(error.message);
+      throw new BadRequestException('Error interno. ', error.message);
+    }
   }
 }

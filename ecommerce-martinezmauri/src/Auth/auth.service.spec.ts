@@ -56,7 +56,10 @@ describe('AuthService() ', () => {
       password: await bcrypt.hash('correctPassword', 10),
     });
     try {
-      await authService.signIn(mockUser.email, 'badPassword');
+      await authService.signIn({
+        email: mockUser.email,
+        password: 'badPassword',
+      });
     } catch (error) {
       expect(error.message).toEqual('Usuario y/o contraseña incorrecta');
       expect(error.status).toBe(400);
@@ -66,7 +69,10 @@ describe('AuthService() ', () => {
   it('singIn() throw an error if the email is incorrect', async () => {
     mockUserRepository.findUserByEmail = jest.fn().mockResolvedValue(undefined);
     try {
-      await authService.signIn('emailIncorrect@example.com', mockUser.password);
+      await authService.signIn({
+        email: 'emailIncorrect@example.com',
+        password: mockUser.password,
+      });
     } catch (error) {
       expect(error.message).toEqual('Usuario y/o contraseña incorrecta');
       expect(error.status).toBe(400);
@@ -79,12 +85,13 @@ describe('AuthService() ', () => {
       password: await bcrypt.hash(mockUser.password, 10),
     });
 
-    const result = await authService.signIn(mockUser.email, mockUser.password);
+    const result = await authService.signIn({
+      email: mockUser.email,
+      password: mockUser.password,
+    });
     expect(result).toHaveProperty('token');
     expect(result.success).toEqual('user logged in successfully');
   });
-
-  // SIGNUP()
 
   it('signUp() create a new user', async () => {
     const user = await authService.signUp(mockUser);

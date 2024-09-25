@@ -14,6 +14,9 @@ import { FileUploadService } from './file-upload.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '../Auth/guards/AuthGuard';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/decorators/roles/roles.decorator';
+import { Role } from 'src/Auth/enum/roles.enum';
+import { RoleGuard } from 'src/Auth/guards/RoleGuard';
 
 @ApiTags('file')
 @Controller('files')
@@ -23,7 +26,8 @@ export class FileUploadController {
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Archivo de imagen a cargar',
+    description:
+      'Archivo de imagen a cargar.Puede ser ejecutado unicamente por un administrador.',
     type: 'multipart/form-data',
     required: true,
     schema: {
@@ -36,8 +40,9 @@ export class FileUploadController {
       },
     },
   })
+  @Roles(Role.Admin)
   @Post('uploadImage/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @UseInterceptors(FileInterceptor('file'))
   async uploadProduct(
     @Param('id') id: string,
@@ -46,7 +51,7 @@ export class FileUploadController {
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({
-            maxSize: 2000000,
+            maxSize: 204800,
             message: 'El archivo debe ser menor a 200kb',
           }),
           new FileTypeValidator({

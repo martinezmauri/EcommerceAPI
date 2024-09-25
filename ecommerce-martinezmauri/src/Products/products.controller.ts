@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -19,7 +20,7 @@ import { Role } from '../Auth/enum/roles.enum';
 import { Roles } from '../decorators/roles/roles.decorator';
 import { RoleGuard } from '../Auth/guards/RoleGuard';
 import { Product } from './Product.entity';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('products')
 @Controller('products')
@@ -32,26 +33,57 @@ export class ProductsController {
     @Query('limit') limit = 5,
     @Query('page') page = 1,
   ): Promise<Product[]> {
-    return this.productsService.getProducts(Number(limit), Number(page));
+    try {
+      return this.productsService.getProducts(Number(limit), Number(page));
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno. ', error.message);
+    }
   }
 
   @Get('/seeder')
   async addProducts(): Promise<string> {
-    return this.productsService.addProducts();
+    try {
+      return this.productsService.addProducts();
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno. ', error.message);
+    }
   }
 
   @HttpCode(200)
   @Get(':id')
   async getProduct(@Param('id', ParseUUIDPipe) id: string): Promise<Product> {
-    return this.productsService.getProductById(id);
+    try {
+      return this.productsService.getProductById(id);
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno. ', error.message);
+    }
   }
 
+  @ApiBody({
+    description:
+      'Datos para la creacion de un nuevo producto. Debe incluir los campos de DTO CreateProductDto',
+    type: CreateProductDto,
+  })
+  @UseGuards(AuthGuard)
   @HttpCode(201)
   @Post()
-  async createProduct(@Body() product: CreateProductDto): Promise<Product> {
-    return this.productsService.createProduct(product); // category_id
+  async createProduct(@Body() product: CreateProductDto): Promise<string> {
+    try {
+      return this.productsService.createProduct(product);
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno. ', error.message);
+    }
   }
 
+  @ApiBody({
+    description:
+      'Datos parciales para actualizar el producto. Puede incluir uno o más campos del DTO CreateProductDto.',
+    type: CreateProductDto,
+  })
   @ApiBearerAuth()
   @HttpCode(200)
   @Put(':id')
@@ -62,21 +94,32 @@ export class ProductsController {
     @Body() product: CreateProductDto,
     @Request() req,
   ): Promise<{
-    updatedProduct: Partial<Product>;
+    updatedProduct: string;
     exp: Date;
   }> {
-    const updatedProduct = await this.productsService.updateProductById(
-      id,
-      product,
-    );
-    return { updatedProduct, exp: req.user.exp };
+    try {
+      const updatedProduct = await this.productsService.updateProductById(
+        id,
+        product,
+      );
+      return { updatedProduct, exp: req.user.exp };
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno. ', error.message);
+    }
   }
 
   @HttpCode(200)
+  @UseGuards(AuthGuard)
   @Delete(':id')
   async deleteProductById(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<string> {
-    return this.productsService.deleteProductById(id);
+    try {
+      return await this.productsService.deleteProductById(id);
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno. ', error.message);
+    }
   }
 }

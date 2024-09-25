@@ -25,41 +25,31 @@ export class OrdersRepository {
   ) {}
 
   async getOrder(id: string) {
-    const user = await this.userRepository.findOne({
-      where: { id },
-    });
-    if (!user) {
-      throw new NotFoundException('No existe un usuario para ese id');
-    }
-
     const order = await this.ordersRepository.findOne({
-      where: { user: user },
-      relations: ['orderDetail'],
+      where: { id },
+      relations: ['user'],
     });
     if (!order) {
-      throw new NotFoundException('No existe una orden para ese id');
+      throw new NotFoundException('No existe una order para ese id.');
     }
-    const orderDetails = await this.orderDetailsRepository.findOne({
+    const user = await this.userRepository.findOne({
+      where: { id: order.user.id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('La orden no pertenece a un usuario.');
+    }
+    const orderDetail = await this.orderDetailsRepository.findOne({
       where: { order: order },
       relations: ['products'],
     });
-    if (!orderDetails) {
-      throw new NotFoundException(
-        'No existe un detalle de orden para esa orden',
-      );
+    if (!orderDetail) {
+      throw new NotFoundException('No existe un detalle para la orden.');
     }
-    const { isAdmin, password, ...userWithoutPassword } = user;
+
     return {
-      user: userWithoutPassword,
-      order: {
-        id: order.id,
-        date: order.date,
-      },
-      orderDetails: {
-        id: orderDetails.id,
-        total: orderDetails.price,
-        products: orderDetails.products,
-      },
+      order,
+      orderDetail,
     };
   }
 
@@ -105,18 +95,8 @@ export class OrdersRepository {
     await this.ordersRepository.save(savedOrder);
 
     return {
-      id: savedOrder.id,
-      date: savedOrder.date,
-      userId: savedOrder.user.id,
-      orderDetail: {
-        id: orderDetail.id,
-        price: orderDetail.price,
-        products: orderDetail.products.map((p) => ({
-          id: p.id,
-          name: p.name,
-          price: p.price,
-        })),
-      },
+      savedOrder,
+      orderDetail,
     };
   }
 }

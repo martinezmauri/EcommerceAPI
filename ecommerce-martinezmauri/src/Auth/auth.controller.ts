@@ -1,4 +1,10 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from '../dto/LoginUserDto';
 import { CreateUserDto } from '../dto/CreateUserDto';
@@ -15,13 +21,23 @@ export class AuthController {
     success: string;
     token: string;
   }> {
-    const result = await this.authService.signIn(loginDto);
-    return result;
+    try {
+      const result = await this.authService.signIn(loginDto);
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno.', error.message);
+    }
   }
 
   @HttpCode(201)
   @Post('signup')
   async signUp(@Body() createUser: CreateUserDto): Promise<Partial<User>> {
-    return this.authService.signUp(createUser);
+    try {
+      return this.authService.signUp(createUser);
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno.', error.message);
+    }
   }
 }

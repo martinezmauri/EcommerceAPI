@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -38,8 +39,16 @@ export class UsersController {
     users: Omit<User, 'password'>[];
     exp: Date;
   }> {
-    const users = await this.usersService.getUsers(Number(limit), Number(page));
-    return { users, exp: req.user?.exp };
+    try {
+      const users = await this.usersService.getUsers(
+        Number(limit),
+        Number(page),
+      );
+      return { users, exp: req.user?.exp };
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno. ', error.message);
+    }
   }
 
   @ApiBearerAuth()
@@ -50,8 +59,13 @@ export class UsersController {
     @Param('id', ParseUUIDPipe) id: string,
     @Request() req,
   ): Promise<{ user: Partial<User>; exp: Date }> {
-    const user = await this.usersService.getUsersById(id);
-    return { user, exp: req.user.exp };
+    try {
+      const user = await this.usersService.getUsersById(id);
+      return { user, exp: req.user.exp };
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno. ', error.message);
+    }
   }
 
   @ApiBearerAuth()
@@ -67,9 +81,14 @@ export class UsersController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() user: Partial<CreateUserDto>,
     @Request() req,
-  ): Promise<{ updatedUser: Partial<User>; exp: Date }> {
-    const updatedUser = await this.usersService.updateUserById(id, user);
-    return { updatedUser, exp: req.user.exp };
+  ): Promise<{ updatedUser: string; exp: Date }> {
+    try {
+      const updatedUser = await this.usersService.updateUserById(id, user);
+      return { updatedUser, exp: req.user.exp };
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno. ', error.message);
+    }
   }
 
   @ApiBearerAuth()
@@ -80,7 +99,12 @@ export class UsersController {
     @Param('id', ParseUUIDPipe) id: string,
     @Request() req,
   ): Promise<{ deletedUser: string; exp: Date }> {
-    const deletedUser = await this.usersService.deleteUserById(id);
-    return { deletedUser, exp: req.user.exp };
+    try {
+      const deletedUser = await this.usersService.deleteUserById(id);
+      return { deletedUser, exp: req.user.exp };
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Error interno. ', error.message);
+    }
   }
 }
