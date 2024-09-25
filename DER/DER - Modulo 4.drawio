@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram name="Página-1" id="nb3_gkNf4HorEFQ1ZqfI">
-        <mxGraphModel dx="923" dy="629" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+        <mxGraphModel dx="843" dy="389" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -44,7 +44,7 @@
                     <mxGeometry x="49" y="150" width="90" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="4MBILseLXls8BSwajLAR-31" value="Productos" style="swimlane;whiteSpace=wrap;html=1;swimlaneFillColor=default;" parent="1" vertex="1">
-                    <mxGeometry x="600" y="280" width="200" height="260" as="geometry"/>
+                    <mxGeometry x="580" y="20" width="200" height="260" as="geometry"/>
                 </mxCell>
                 <mxCell id="4MBILseLXls8BSwajLAR-32" value="nombre:string" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="4MBILseLXls8BSwajLAR-31" vertex="1">
                     <mxGeometry x="45" y="70" width="100" height="30" as="geometry"/>
@@ -67,7 +67,7 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="4MBILseLXls8BSwajLAR-23" value="Detalle de compra" style="swimlane;whiteSpace=wrap;html=1;swimlaneFillColor=default;" parent="1" vertex="1">
-                    <mxGeometry x="340" y="280" width="200" height="270" as="geometry"/>
+                    <mxGeometry x="50" y="270" width="200" height="270" as="geometry"/>
                 </mxCell>
                 <mxCell id="4MBILseLXls8BSwajLAR-24" value="idOrden:ObjetId" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="4MBILseLXls8BSwajLAR-23" vertex="1">
                     <mxGeometry x="45" y="170" width="110" height="30" as="geometry"/>
