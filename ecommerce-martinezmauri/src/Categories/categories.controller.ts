@@ -10,20 +10,10 @@ export class CategoriesController {
 
   @Get()
   async getCategories(): Promise<Categories[]> {
-    try {
-      return this.categoriesService.getCategories();
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Error interno.', error.message);
-    }
+    return this.categoriesService.getCategories();
   }
   @Get('seeder')
   async addCategories(): Promise<string> {
-    try {
-      return this.categoriesService.addCategories();
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Error interno.', error.message);
-    }
+    return this.categoriesService.addCategories();
   }
 }

@@ -49,27 +49,22 @@ export class OrdersController {
   @Post()
   @UseGuards(AuthGuard)
   async addOrder(@Body() createOrderDto: CreateOrderDto, @Request() req) {
-    try {
-      const { savedOrder, orderDetail } =
-        await this.ordersService.addOrder(createOrderDto);
-      return {
-        id: savedOrder.id,
-        date: savedOrder.date,
-        userId: savedOrder.user.id,
-        orderDetail: {
-          id: orderDetail.id,
-          price: orderDetail.price,
-          products: orderDetail.products.map((p) => ({
-            id: p.id,
-            name: p.name,
-            price: p.price,
-          })),
-        },
-        exp: req.user.exp,
-      };
-    } catch (error) {
-      console.error(error.message);
-      throw new BadRequestException('Error interno. ', error.message);
-    }
+    const { savedOrder, orderDetail } =
+      await this.ordersService.addOrder(createOrderDto);
+    return {
+      id: savedOrder.id,
+      date: savedOrder.date,
+      userId: savedOrder.user.id,
+      orderDetail: {
+        id: orderDetail.id,
+        price: orderDetail.price,
+        products: orderDetail.products.map((p) => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+        })),
+      },
+      exp: req.user.exp,
+    };
   }
 }

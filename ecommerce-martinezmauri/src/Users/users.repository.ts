@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './User.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserDto } from 'src/dto/updateUserDto';
 
 @Injectable()
 export class UsersRepository {
@@ -40,7 +41,7 @@ export class UsersRepository {
     return createdUser;
   }
 
-  async updateUserById(id: string, user: Partial<User>): Promise<string> {
+  async updateUserById(id: string, user: UpdateUserDto): Promise<string> {
     const existingUser = await this.userRepository.findOne({ where: { id } });
 
     if (!existingUser) {

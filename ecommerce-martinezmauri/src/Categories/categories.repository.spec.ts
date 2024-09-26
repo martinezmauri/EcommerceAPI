@@ -54,7 +54,7 @@ describe('CategoriesRepository', () => {
 
     const result = await categoriesRepository.addCategories();
 
-    expect(result).toEqual('Las categorias se encuentran cargadas ');
+    expect(result).toEqual('Todas las categorías ya están cargadas.');
   });
 
   it('getCategories() should add categories if they do not exist', async () => {
@@ -64,7 +64,7 @@ describe('CategoriesRepository', () => {
 
     const result = await categoriesRepository.addCategories();
 
-    expect(result).toBe('Categorias agregadas');
+    expect(result).toBe('12 categorías agregadas exitosamente.');
     expect(mockCategoriesRepository.create).toHaveBeenCalledWith({
       name: data[0].category,
     });

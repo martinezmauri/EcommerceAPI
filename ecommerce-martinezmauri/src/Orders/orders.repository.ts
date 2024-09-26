@@ -32,17 +32,11 @@ export class OrdersRepository {
     if (!order) {
       throw new NotFoundException('No existe una order para ese id.');
     }
-    const user = await this.userRepository.findOne({
-      where: { id: order.user.id },
-    });
-
-    if (!user) {
-      throw new NotFoundException('La orden no pertenece a un usuario.');
-    }
     const orderDetail = await this.orderDetailsRepository.findOne({
       where: { order: order },
       relations: ['products'],
     });
+
     if (!orderDetail) {
       throw new NotFoundException('No existe un detalle para la orden.');
     }

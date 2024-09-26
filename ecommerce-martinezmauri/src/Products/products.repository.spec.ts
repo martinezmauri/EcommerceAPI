@@ -85,6 +85,7 @@ describe('productRepository', () => {
     expect(result).toBe(mockProduct);
     expect(mockProductRepository.findOne).toHaveBeenCalledWith({
       where: { id: '123' },
+      relations: ['categories'],
     });
   });
 
@@ -96,6 +97,7 @@ describe('productRepository', () => {
     expect(result).toBeNull();
     expect(mockProductRepository.findOne).toHaveBeenCalledWith({
       where: { id: 'non-existent-id' },
+      relations: ['categories'],
     });
   });
 
@@ -152,10 +154,12 @@ describe('productRepository', () => {
     try {
       await productRepository.createProduct(mockProduct);
     } catch (error) {
-      expect(error.message).toEqual(`Categoría test no encontrada.`);
+      expect(error.message).toEqual(
+        `Categoría 6816105a-a56b-4eb6-bdaf-d2cf75277550 no encontrada.`,
+      );
       expect(error.status).toBe(404);
       expect(mockCategoriesRepository.findOne).toHaveBeenCalledWith({
-        where: { name: 'test' },
+        where: { id: '6816105a-a56b-4eb6-bdaf-d2cf75277550' },
       });
     }
   });
@@ -178,14 +182,18 @@ describe('productRepository', () => {
     jest
       .spyOn(mockProductRepository, 'create')
       .mockReturnValue({ ...mockProduct, categories: mockCategory });
-    jest
-      .spyOn(mockProductRepository, 'save')
-      .mockResolvedValue({ ...mockProduct, categories: mockCategory });
+    jest.spyOn(mockProductRepository, 'save').mockResolvedValue({
+      id: '123456-a56b-4eb6-bdaf-d2cf75277550',
+      ...mockProduct,
+      categories: mockCategory,
+    });
 
     const result = await productRepository.createProduct(mockProduct);
 
     expect(mockCategoriesRepository.findOne).toHaveBeenCalledWith({
-      where: { name: 'categoria 1' },
+      where: {
+        id: '6816105a-a56b-4eb6-bdaf-d2cf75277550',
+      },
     });
     expect(mockProductRepository.create).toHaveBeenCalledWith({
       name: 'product-test',
@@ -196,10 +204,7 @@ describe('productRepository', () => {
       categories: mockCategory,
     });
     expect(mockProductRepository.save).toHaveBeenCalled();
-    expect(result).toEqual({
-      ...mockProduct,
-      categories: mockCategory,
-    });
+    expect(result).toEqual('123456-a56b-4eb6-bdaf-d2cf75277550');
   });
 
   it('updateProductById() should throw a error if not exist product for id', async () => {
@@ -243,10 +248,7 @@ describe('productRepository', () => {
       mockNewProduct,
     );
 
-    expect(result).toEqual({
-      ...mockProduct,
-      ...mockNewProduct,
-    });
+    expect(result).toEqual('1');
     expect(mockProductRepository.findOneBy).toHaveBeenCalledWith({ id: '1' });
     expect(mockProductRepository.save).toHaveBeenCalledWith({
       ...mockProduct,
@@ -255,19 +257,18 @@ describe('productRepository', () => {
   });
   it('deleteProductById() should throw a error if not exist product for id', async () => {
     mockProductRepository.findOneBy.mockResolvedValue(null);
+    mockProductRepository.delete.mockResolvedValue({ affected: 0 });
     try {
       await productRepository.deleteProductById('invalid-id');
     } catch (error) {
-      expect(error.message).toEqual(
-        `El producto con ID invalid-id no encontrado.`,
-      );
+      expect(error.message).toEqual(`El producto no existe.`);
     }
   });
   it('deleteProductById() should return id for the product deleted', async () => {
     const mockProduct = { id: 'valid-id', name: 'product-test' };
     mockProductRepository.findOneBy.mockResolvedValue(mockProduct);
-    mockProductRepository.delete.mockResolvedValue(null);
+    mockProductRepository.delete.mockResolvedValue({ affected: 1 });
     const result = await productRepository.deleteProductById('valid-id');
-    expect(result).toEqual(`Producto con ID valid-id eliminado`);
+    expect(result).toEqual(`valid-id`);
   });
 });

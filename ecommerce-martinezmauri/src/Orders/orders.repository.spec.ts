@@ -63,66 +63,36 @@ describe('ordersRepository', () => {
     expect(ordersRepository).toBeDefined();
   });
 
-  it('getOrder() throw error if the user id is invalid', async () => {
-    mockUserRepository.findOne.mockResolvedValue(null);
+  it('getOrder() throw error if the order id is invalid', async () => {
+    mockOrdersRepository.findOne.mockResolvedValue(null);
     try {
       await ordersRepository.getOrder('invalid-id');
     } catch (error) {
-      expect(error.message).toEqual('No existe un usuario para ese id');
+      expect(error.message).toEqual('No existe una order para ese id.');
       expect(error.status).toBe(404);
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
+      expect(mockOrdersRepository.findOne).toHaveBeenCalledWith({
         where: { id: 'invalid-id' },
+        relations: ['user'],
       });
     }
   });
 
-  it('getOrder() throw error if order not found for the user', async () => {
-    const mockUser = {
-      id: 'valid-id',
-      name: 'test-user',
-    };
-    mockUserRepository.findOne.mockResolvedValue(mockUser);
-    mockOrdersRepository.findOne.mockResolvedValue(null);
-    try {
-      await ordersRepository.getOrder('valid-id');
-    } catch (error) {
-      expect(error.message).toEqual('No existe una orden para ese id');
-      expect(error.status).toBe(404);
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'valid-id' },
-      });
-      expect(mockOrdersRepository.findOne).toHaveBeenCalledWith({
-        where: { user: mockUser },
-        relations: ['orderDetail'],
-      });
-    }
-  });
   it('getOrder() throw error if detail order not found ', async () => {
-    const mockUser = {
-      id: 'valid-id',
-      name: 'test-user',
-    };
     const mockOrder = {
       id: 'valid-id',
       date: new Date(),
     };
 
-    mockUserRepository.findOne.mockResolvedValue(mockUser);
     mockOrdersRepository.findOne.mockResolvedValue(mockOrder);
     mockOrderDetailsRepository.findOne.mockResolvedValue(null);
     try {
       await ordersRepository.getOrder('valid-id');
     } catch (error) {
-      expect(error.message).toEqual(
-        'No existe un detalle de orden para esa orden',
-      );
+      expect(error.message).toEqual('No existe un detalle para la orden.');
       expect(error.status).toBe(404);
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'valid-id' },
-      });
       expect(mockOrdersRepository.findOne).toHaveBeenCalledWith({
-        where: { user: mockUser },
-        relations: ['orderDetail'],
+        where: { id: 'valid-id' },
+        relations: ['user'],
       });
       expect(mockOrderDetailsRepository.findOne).toHaveBeenCalledWith({
         where: { order: mockOrder },
@@ -132,13 +102,13 @@ describe('ordersRepository', () => {
   });
 
   it('getOrder() returns a valid order', async () => {
-    const mockUser = {
-      id: 'valid-id',
-      name: 'test-user',
-    };
     const mockOrder = {
       id: 'valid-id',
       date: new Date(),
+      user: {
+        id: 'valid-id',
+        name: 'test-user',
+      },
     };
     const mockOrderDetail = {
       id: 'valid-id',
@@ -149,25 +119,21 @@ describe('ordersRepository', () => {
       ],
     };
 
-    mockUserRepository.findOne.mockResolvedValue(mockUser);
     mockOrdersRepository.findOne.mockResolvedValue(mockOrder);
     mockOrderDetailsRepository.findOne.mockResolvedValue(mockOrderDetail);
 
     const result = await ordersRepository.getOrder('valid-id');
 
-    expect(result.user).toEqual(mockUser);
+    expect(result.order.user).toEqual(mockOrder.user);
     expect(result.order).toEqual(mockOrder);
-    expect(result.orderDetails).toEqual({
+    expect(result.orderDetail).toEqual({
       id: mockOrderDetail.id,
-      total: mockOrderDetail.price,
+      price: mockOrderDetail.price,
       products: mockOrderDetail.products,
     });
-    expect(mockUserRepository.findOne).toHaveBeenCalledWith({
-      where: { id: 'valid-id' },
-    });
     expect(mockOrdersRepository.findOne).toHaveBeenCalledWith({
-      where: { user: mockUser },
-      relations: ['orderDetail'],
+      where: { id: 'valid-id' },
+      relations: ['user'],
     });
     expect(mockOrderDetailsRepository.findOne).toHaveBeenCalledWith({
       where: { order: mockOrder },

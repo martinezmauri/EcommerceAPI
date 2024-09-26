@@ -33,33 +33,18 @@ export class ProductsController {
     @Query('limit') limit = 5,
     @Query('page') page = 1,
   ): Promise<Product[]> {
-    try {
-      return this.productsService.getProducts(Number(limit), Number(page));
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Error interno. ', error.message);
-    }
+    return this.productsService.getProducts(Number(limit), Number(page));
   }
 
   @Get('/seeder')
   async addProducts(): Promise<string> {
-    try {
-      return this.productsService.addProducts();
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Error interno. ', error.message);
-    }
+    return this.productsService.addProducts();
   }
 
   @HttpCode(200)
   @Get(':id')
   async getProduct(@Param('id', ParseUUIDPipe) id: string): Promise<Product> {
-    try {
-      return this.productsService.getProductById(id);
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Error interno. ', error.message);
-    }
+    return this.productsService.getProductById(id);
   }
 
   @ApiBody({
@@ -71,12 +56,7 @@ export class ProductsController {
   @HttpCode(201)
   @Post()
   async createProduct(@Body() product: CreateProductDto): Promise<string> {
-    try {
-      return this.productsService.createProduct(product);
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Error interno. ', error.message);
-    }
+    return this.productsService.createProduct(product);
   }
 
   @ApiBody({
@@ -97,16 +77,11 @@ export class ProductsController {
     updatedProduct: string;
     exp: Date;
   }> {
-    try {
-      const updatedProduct = await this.productsService.updateProductById(
-        id,
-        product,
-      );
-      return { updatedProduct, exp: req.user.exp };
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Error interno. ', error.message);
-    }
+    const updatedProduct = await this.productsService.updateProductById(
+      id,
+      product,
+    );
+    return { updatedProduct, exp: req.user.exp };
   }
 
   @HttpCode(200)
@@ -115,11 +90,6 @@ export class ProductsController {
   async deleteProductById(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<string> {
-    try {
-      return await this.productsService.deleteProductById(id);
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Error interno. ', error.message);
-    }
+    return await this.productsService.deleteProductById(id);
   }
 }

@@ -24,6 +24,15 @@ const mockUser = {
   city: 'test',
   isAdmin: false,
 };
+const mockUpdateUser = {
+  name: 'test1',
+  email: 'test1@mail.com',
+  password: 'test12345',
+  phone: 123456789,
+  country: 'Pais Falso',
+  address: 'Direccion Falsa',
+  city: 'Ciudad Falsa',
+};
 
 describe('userRepository', () => {
   let userRepository: UsersRepository;
@@ -113,9 +122,7 @@ describe('userRepository', () => {
   it('updateUserById() should return an error if the user is not found', async () => {
     mockUserRepository.findOne.mockResolvedValue(null);
     try {
-      await userRepository.updateUserById('invalid-id', {
-        password: 'test321',
-      });
+      await userRepository.updateUserById('invalid-id', mockUpdateUser);
     } catch (error) {
       expect(error.message).toEqual('El usuario no existe.');
       expect(error.status).toBe(404);
@@ -125,15 +132,13 @@ describe('userRepository', () => {
     mockUserRepository.findOne.mockResolvedValue(mockUser);
     jest.spyOn(bcrypt, 'hash').mockResolvedValue(null);
     try {
-      await userRepository.updateUserById('invalid-id', {
-        password: 'test321',
-      });
+      await userRepository.updateUserById('invalid-id', mockUpdateUser);
     } catch (error) {
       expect(error.message).toEqual('Error interno al hashear');
       expect(error.status).toBe(400);
     }
   });
-  it('updatedUserById() should return the updated user hiding their password', async () => {
+  it('updatedUserById() should return the updated user id', async () => {
     mockUserRepository.findOne.mockResolvedValue(mockUser);
 
     const hashedPassword = 'hashedPassword123';
@@ -149,22 +154,11 @@ describe('userRepository', () => {
       password: hashedPassword,
     });
 
-    const user = await userRepository.updateUserById('valid-id', {
-      password: 'asd123',
-    });
+    const id = await userRepository.updateUserById('valid-id', mockUpdateUser);
 
-    expect(user.password).not.toBeDefined();
-    expect(bcrypt.hash).toHaveBeenCalledWith('asd123', 10);
-    expect(user).toEqual({
-      id: 'valid-id',
-      name: 'test',
-      email: 'test@mail.com',
-      phone: 123456789,
-      country: 'test',
-      address: 'test',
-      city: 'test',
-      isAdmin: false,
-    });
+    expect(id).toBeDefined();
+    expect(bcrypt.hash).toHaveBeenCalledWith('test12345', 10);
+    expect(id).toEqual('valid-id');
   });
 
   it('deleteUserById() should return an error if the number of affected rows is 0 ', async () => {
@@ -178,7 +172,7 @@ describe('userRepository', () => {
   it('deleteUserById() should return an message if the user was deleted', async () => {
     mockUserRepository.delete.mockResolvedValue({ result: 1 });
     const result = await userRepository.deleteUserById('valid-id');
-    expect(result).toEqual('Usuario con ID valid-id eliminado correctamente.');
+    expect(result).toEqual('valid-id');
     expect(mockUserRepository.delete).toHaveBeenCalledWith({ id: 'valid-id' });
   });
 });

@@ -21,23 +21,13 @@ export class AuthController {
     success: string;
     token: string;
   }> {
-    try {
-      const result = await this.authService.signIn(loginDto);
-      return result;
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Error interno.', error.message);
-    }
+    const result = await this.authService.signIn(loginDto);
+    return result;
   }
 
   @HttpCode(201)
   @Post('signup')
   async signUp(@Body() createUser: CreateUserDto): Promise<Partial<User>> {
-    try {
-      return this.authService.signUp(createUser);
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Error interno.', error.message);
-    }
+    return this.authService.signUp(createUser);
   }
 }
