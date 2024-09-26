@@ -18,7 +18,7 @@ import { Role } from '../Auth/enum/roles.enum';
 import { RoleGuard } from '../Auth/guards/RoleGuard';
 import { User } from './User.entity';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
-import { UpdateUserDto } from 'src/dto/updateUserDto';
+import { UpdateUserDto } from '../dto/UpdateUserDto';
 
 @ApiTags('users')
 @Controller('users')

@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './User.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { UpdateUserDto } from 'src/dto/updateUserDto';
+import { UpdateUserDto } from '../dto/UpdateUserDto';
 
 @Injectable()
 export class UsersRepository {
