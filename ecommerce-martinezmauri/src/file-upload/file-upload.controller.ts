@@ -4,6 +4,7 @@ import {
   MaxFileSizeValidator,
   Param,
   ParseFilePipe,
+  ParseUUIDPipe,
   Post,
   Request,
   UploadedFile,
@@ -13,7 +14,14 @@ import {
 import { FileUploadService } from './file-upload.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '../Auth/guards/AuthGuard';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from 'src/decorators/roles/roles.decorator';
 import { Role } from 'src/Auth/enum/roles.enum';
 import { RoleGuard } from 'src/Auth/guards/RoleGuard';
@@ -23,11 +31,14 @@ import { RoleGuard } from 'src/Auth/guards/RoleGuard';
 export class FileUploadController {
   constructor(private readonly fileUploadService: FileUploadService) {}
 
-  @ApiBearerAuth()
-  @ApiConsumes('multipart/form-data')
+  @ApiOperation({
+    summary: 'Actualizar la imagen de un producto.',
+    description:
+      'Este endpoint permite actualizar la imagen de un producto mediante un archivo.',
+  })
   @ApiBody({
     description:
-      'Archivo de imagen a cargar.Puede ser ejecutado unicamente por un administrador.',
+      'Archivo de imagen a cargar debe ser de tipo jpg, jpeg, png o webp y debe tener un tamaño maximo de 200kb.Puede ser ejecutado unicamente por un administrador.',
     type: 'multipart/form-data',
     required: true,
     schema: {
@@ -40,12 +51,23 @@ export class FileUploadController {
       },
     },
   })
+  @ApiResponse({
+    status: 201,
+    description:
+      'Producto con imagen actualizada y tiempo de expiracion de token.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No existe el producto al que quiere modificar',
+  })
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
   @Roles(Role.Admin)
   @Post('uploadImage/:id')
   @UseGuards(AuthGuard, RoleGuard)
   @UseInterceptors(FileInterceptor('file'))
   async uploadProduct(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Request() req,
     @UploadedFile(
       new ParseFilePipe({

@@ -5,7 +5,6 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import { Product } from '../Products/Product.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 

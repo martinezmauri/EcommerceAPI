@@ -17,7 +17,13 @@ import { Roles } from '../decorators/roles/roles.decorator';
 import { Role } from '../Auth/enum/roles.enum';
 import { RoleGuard } from '../Auth/guards/RoleGuard';
 import { User } from './User.entity';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UpdateUserDto } from '../dto/UpdateUserDto';
 
 @ApiTags('users')
@@ -25,6 +31,12 @@ import { UpdateUserDto } from '../dto/UpdateUserDto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({
+    summary: 'Obtener la lista de usuarios',
+    description:
+      'Este endpoint permite obtener la lista de usuarios registrados. Puedes agregar Querys de page y limit para paginar los resultados. Necesita rol de administrador para ejecutarlo.',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de usuarios' })
   @ApiBearerAuth()
   @HttpCode(200)
   @Get()
@@ -42,6 +54,16 @@ export class UsersController {
     return { users, exp: req.user?.exp };
   }
 
+  @ApiOperation({
+    summary: 'Obtener información de un usuario',
+    description:
+      'Este endpoint permite obtener información de un usuario buscado por su ID. Es necesario un token valido.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuario encontrado y tiempo de expiracion de token.',
+  })
+  @ApiResponse({ status: 404, description: 'El usuario no existe.' })
   @ApiBearerAuth()
   @HttpCode(200)
   @Get(':id')
@@ -54,14 +76,25 @@ export class UsersController {
     return { user, exp: req.user.exp };
   }
 
-  @ApiBearerAuth()
-  @HttpCode(200)
-  @Put(':id')
+  @ApiOperation({
+    summary: 'Actualizar información del usuario',
+    description:
+      'Este endpoint permite actualizar la información de un usuario buscado por ID. Es necesario un token valido.',
+  })
   @ApiBody({
     description:
       'Datos para actualizar el usuario. Deben incluir los mismos campos que el DTO UpdateUserDto',
     type: UpdateUserDto,
   })
+  @ApiResponse({
+    status: 200,
+    description: 'ID del usuario actualizado y tiempo de expiracion del token.',
+  })
+  @ApiResponse({ status: 404, description: 'El usuario no existe.' })
+  @ApiResponse({ status: 400, description: 'Error interno.' })
+  @ApiBearerAuth()
+  @HttpCode(200)
+  @Put(':id')
   @UseGuards(AuthGuard)
   async updateUserByid(
     @Param('id', ParseUUIDPipe) id: string,
@@ -72,6 +105,16 @@ export class UsersController {
     return { updatedUser, exp: req.user.exp };
   }
 
+  @ApiOperation({
+    summary: 'Borrar un usuario',
+    description:
+      'Este endpoint permite borrar la información de un usuario buscado por su ID. Es necesario un token valido.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'ID del usuario eliminado y tiempo de expiracion del token.',
+  })
+  @ApiResponse({ status: 404, description: 'El usuario no existe.' })
   @ApiBearerAuth()
   @HttpCode(200)
   @Delete(':id')

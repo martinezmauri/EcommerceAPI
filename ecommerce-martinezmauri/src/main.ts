@@ -17,7 +17,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('ecommerce<martinezmauri>')
     .setDescription(
-      'Esta es un ecommerce API construida con NestJS por un proyecto integrador.',
+      'Esta API permite gestionar un sistema de ecommerce, brindando funcionalidades para la creación, actualización y eliminación de usuarios, productos y órdenes. Además, proporciona mecanismos de autenticación y autorización basados en roles, garantizando seguridad en el acceso a los recursos.',
     )
     .setVersion('1.0')
     .addBearerAuth()

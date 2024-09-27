@@ -134,7 +134,7 @@ describe('userRepository', () => {
     try {
       await userRepository.updateUserById('invalid-id', mockUpdateUser);
     } catch (error) {
-      expect(error.message).toEqual('Error interno al hashear');
+      expect(error.message).toEqual('Error interno.');
       expect(error.status).toBe(400);
     }
   });

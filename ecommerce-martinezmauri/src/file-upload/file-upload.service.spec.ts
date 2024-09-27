@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { FileUploadRepository } from './file-upload.repository';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { buffer } from 'stream/consumers';
 
 const mockProductRepository = {
   findOneBy: jest.fn(),

@@ -17,7 +17,7 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "resolveJsonModule": true, // para que pueda leer los json / importar los json.
+    "resolveJsonModule": true,
     "types": ["multer","jest"],
   }
 }

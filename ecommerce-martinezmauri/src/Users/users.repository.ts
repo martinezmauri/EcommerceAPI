@@ -51,7 +51,7 @@ export class UsersRepository {
     if (user.password) {
       const passwordHashed = await bcrypt.hash(user.password, 10);
       if (!passwordHashed) {
-        throw new BadRequestException('Error interno al hashear');
+        throw new BadRequestException('Error interno.');
       }
       user.password = passwordHashed;
     }
