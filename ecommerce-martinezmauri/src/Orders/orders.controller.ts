@@ -18,6 +18,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Orders } from './Orders.entity';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -33,6 +34,7 @@ export class OrdersController {
     status: 200,
     description:
       'Orden de compra buscada por ID. Con informacion del usuario, detalles y tiempo de expiracion de token.',
+    type: Orders,
   })
   @ApiResponse({
     status: 404,
